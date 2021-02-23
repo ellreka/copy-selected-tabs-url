@@ -1,11 +1,11 @@
 {
   "name": "copy-selected-tabs-url",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "main": "index.js",
   "author": "ellreka",
   "license": "MIT",
   "scripts": {
-    "build": "rimraf build && webpack --mode production",
+    "build": "rimraf build && NODE_ENV=production webpack --mode production",
     "dev": "rimraf build && webpack --mode development --watch"
   },
   "devDependencies": {

@@ -14,6 +14,9 @@ module.exports = {
       backgroundColor: colors,
       borderColor: colors,
       textColor: colors,
+      width: {
+        'screen-sm': '640px'
+      },
       minWidth: {
         ...theme.spacing
       }

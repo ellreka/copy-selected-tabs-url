@@ -70,8 +70,12 @@ export function Popup() {
     setCopied(true)
   }
 
-  function moveTab(id: number) {
-    chrome.tabs.move(id, { index: -1 })
+  function openTab(id: number | undefined) {
+    if (id !== undefined) {
+      chrome.tabs.update(id, {
+        active: true
+      })
+    }
   }
 
   return (
@@ -90,7 +94,7 @@ export function Popup() {
                 <span className="text-base text-white">{tab.title}</span>
                 <button
                   className="w-6 h-6 rounded-md hover:bg-gray-700 flex items-center justify-center"
-                  onClick={() => {}}>
+                  onClick={() => openTab(tab.id)}>
                   <svg
                     className="text-gray-300 w-4 h-4"
                     xmlns="http://www.w3.org/2000/svg"

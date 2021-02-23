@@ -4,3 +4,4 @@ secrets.*.js
 *.crx
 *.pem
 *.zip
+*.log

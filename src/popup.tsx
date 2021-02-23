@@ -17,12 +17,12 @@ export function Popup() {
   }, [copied])
 
   function getSelectedTabs() {
-    chrome.tabs.query(
-      { highlighted: true, currentWindow: true },
-      function (tabs) {
-        setTabs(tabs)
-      }
-    )
+    chrome.tabs.query({ currentWindow: true }, function (tabs) {
+      const sortedTabs = tabs.sort(
+        (a, b) => Number(b.highlighted) - Number(a.highlighted)
+      )
+      setTabs(sortedTabs)
+    })
   }
 
   function copyUrl() {
@@ -33,14 +33,24 @@ export function Popup() {
     navigator.clipboard.writeText(clipboardText)
     setCopied(true)
   }
+
+  function moveTab(id: number) {
+    chrome.tabs.move(id, { index: -1 })
+  }
   return (
     <div>
       <ul>
         {tabs.map((tab) => (
-          <li key={tab.index}>
-            <a href={tab.url} target="_blank">
-              {tab.url}
-            </a>
+          <li key={tab.id}>
+            <label>
+              <input type="checkbox" name="" id="" checked={tab.highlighted} />
+              <div>
+                <img src={tab.favIconUrl} alt="" />
+                <span>
+                  {tab.title} | {tab.url}
+                </span>
+              </div>
+            </label>
           </li>
         ))}
       </ul>

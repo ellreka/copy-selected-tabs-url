@@ -10,6 +10,15 @@ export function Popup() {
   const [tabs, setTabs] = React.useState<TabItem[]>([])
   const [clipboardText, setClipboardText] = React.useState<string>('')
   const [copied, setCopied] = React.useState<boolean>(false)
+  const [filterText, setFilterText] = React.useState<string>('')
+
+  const sortedTabs = React.useMemo(() => {
+    const regex = new RegExp(filterText, 'ig')
+    console.log(regex, tabs)
+    return tabs.filter((tab) => {
+      return regex.test(tab.title ?? '') || regex.test(tab.url ?? '')
+    })
+  }, [filterText, tabs])
 
   React.useEffect(() => {
     getCurrentWindowTabs()
@@ -78,41 +87,77 @@ export function Popup() {
     }
   }
 
+  function onChangeFilterText(event: React.ChangeEvent<HTMLInputElement>) {
+    const { value } = event.target
+    setFilterText(value)
+  }
+
   return (
     <div className="px-10 py-5 max-w-4xl w-screen-sm bg-gray-500 space-y-5">
-      <ul className="h-64 overflow-scroll">
-        {tabs.map((tab) => (
-          <li key={tab.id} className="truncate">
-            <label className="flex items-center space-x-2 rounded-md cursor-pointer p-2 hover:bg-gray-600">
-              <input
-                type="checkbox"
-                onChange={() => onCheckTab(tab.id)}
-                checked={tab.checked}
+      <div className="flex justify-end">
+        <label className="inline-flex items-center h-6">
+          <div className="w-6 h-full bg-gray-600 rounded-l-md flex items-center justify-center">
+            <svg
+              className="text-white w-4 h-4"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
               />
-              <div className="flex items-center space-x-2">
-                <img className="w-4 h-4" src={tab.favIconUrl} alt="" />
-                <span className="text-base text-white">{tab.title}</span>
-                <button
-                  className="w-6 h-6 rounded-md hover:bg-gray-700 flex items-center justify-center"
-                  onClick={() => openTab(tab.id)}>
-                  <svg
-                    className="text-gray-300 w-4 h-4"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </label>
-          </li>
-        ))}
+            </svg>
+          </div>
+          <input
+            className="rounded-r-md h-full bg-white w-36 px-2 py-1"
+            type="text"
+            value={filterText}
+            onChange={onChangeFilterText}
+          />
+        </label>
+      </div>
+      <ul className="h-64 overflow-scroll">
+        {sortedTabs.length > 0 ? (
+          sortedTabs.map((tab) => (
+            <li key={tab.id} className="">
+              <label className="flex items-center space-x-2 rounded-md cursor-pointer p-2 hover:bg-gray-600">
+                <input
+                  type="checkbox"
+                  onChange={() => onCheckTab(tab.id)}
+                  checked={tab.checked}
+                />
+                <div className="flex items-center w-full overflow-x-hidden space-x-2">
+                  <img className="w-4 h-4" src={tab.favIconUrl} alt="" />
+                  <span className="text-base text-white truncate" title={tab.title}>{tab.title}</span>
+                  <button
+                    className="w-6 h-6 rounded-md hover:bg-gray-700 flex items-center justify-center"
+                    onClick={() => openTab(tab.id)}>
+                    <svg
+                      className="text-gray-300 w-4 h-4"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </label>
+            </li>
+          ))
+        ) : (
+          <p className="text-base text-white font-bold flex justify-center items-center h-full">
+            Tab does not exist.
+          </p>
+        )}
       </ul>
       <div>
         <textarea

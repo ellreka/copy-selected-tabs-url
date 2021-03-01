@@ -5,3 +5,4 @@ secrets.*.js
 *.pem
 *.zip
 *.log
+.DS_Store

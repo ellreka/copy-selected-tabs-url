@@ -11,7 +11,10 @@ export function Popup() {
   const [clipboardText, setClipboardText] = React.useState<string>('')
   const [copied, setCopied] = React.useState<boolean>(false)
   const [filterText, setFilterText] = React.useState<string>('')
-  const [template, setTemplate] = React.useState<string>('{{ url }}')
+  const [format, setFormat] = React.useState({
+    url: true,
+    title: false
+  })
 
   const sortedTabs = React.useMemo(() => {
     const regex = new RegExp(filterText, 'ig')
@@ -25,17 +28,24 @@ export function Popup() {
   }, [])
 
   React.useEffect(() => {
-    let text = ''
-    tabs
+    const text = tabs
       .filter((tab) => tab.checked)
-      .forEach((tab) => {
-        const oneLineText = template
-          .replace(/{{ url }}/gi, tab.url ?? '')
-          .replace(/{{ title }}/gi, tab.title ?? '')
-        text += `${oneLineText}\n`
+      .map((tab) => {
+        let line = ''
+        if (format.title) {
+          line += tab.title ?? ''
+        }
+        if (format.title && format.url) {
+          line += ' | '
+        }
+        if (format.url) {
+          line += tab.url ?? ''
+        }
+        return line
       })
+      .join('\n')
     setClipboardText(text)
-  }, [tabs, template])
+  }, [tabs, format])
 
   React.useEffect(() => {
     if (!copied) return
@@ -95,37 +105,33 @@ export function Popup() {
     setFilterText(value)
   }
 
-  function onChangeTemplate(event: React.ChangeEvent<HTMLInputElement>) {
-    const { value } = event.target
-    setTemplate(value)
-  }
+  const onChangeFormat =
+    (type: 'url' | 'title') => (event: React.ChangeEvent<HTMLInputElement>) => {
+      const { checked } = event.target
+      setFormat({
+        ...format,
+        [type]: checked
+      })
+    }
 
   return (
     <div className="px-10 py-5 max-w-4xl w-screen-sm bg-gray-500 space-y-5">
       <div className="flex justify-end space-x-3">
-        <label className="inline-flex items-center h-6">
-          <div className="w-6 h-full bg-gray-600 rounded-l-md flex items-center justify-center">
-            <svg
-              className="text-white w-4 h-4"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"
-              />
-            </svg>
-          </div>
+        <label className="inline-flex items-center text-white text-md gap-1">
           <input
-            className="rounded-r-md h-full bg-white w-36 px-2 py-1"
-            placeholder="{{ title }} | {{ url }}"
-            type="text"
-            value={template}
-            onChange={onChangeTemplate}
+            type="checkbox"
+            checked={format.title}
+            onChange={(e) => onChangeFormat('title')(e)}
           />
+          <span>Title</span>
+        </label>
+        <label className="inline-flex items-center text-white text-md gap-1">
+          <input
+            type="checkbox"
+            checked={format.url}
+            onChange={(e) => onChangeFormat('url')(e)}
+          />
+          <span>URL</span>
         </label>
         <label className="inline-flex items-center h-6">
           <div className="w-6 h-full bg-gray-600 rounded-l-md flex items-center justify-center">

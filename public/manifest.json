@@ -1,6 +1,6 @@
 {
   "name": "copy-selected-tabs-url",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "action": {
     "default_popup": "popup.html",

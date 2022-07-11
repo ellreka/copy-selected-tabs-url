@@ -6,9 +6,10 @@ const colors = {
   black: '#333333'
 }
 
+/** @type {import('tailwindcss').Config} */
 module.exports = {
   ...require('@ellreka/configs/tailwind.config.js'),
-  purge: ['./src/popup.tsx'],
+  content: ['./src/popup.tsx'],
   theme: {
     extend: {
       backgroundColor: colors,

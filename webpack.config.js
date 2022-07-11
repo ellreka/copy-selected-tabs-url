@@ -3,8 +3,9 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 module.exports = {
   entry: {
-    background: path.join(__dirname, 'src/background.ts'),
-    popup: path.join(__dirname, 'src/popup.tsx')
+    // background: path.join(__dirname, 'src/background.ts'),
+    popup: path.join(__dirname, 'src/popup.tsx'),
+    // content: path.join(__dirname, 'src/content.ts'),
   },
   output: {
     path: path.join(__dirname, 'build'),
@@ -38,14 +39,12 @@ module.exports = {
     ]
   },
   resolve: {
-    extensions: ['.js', '.ts']
+    extensions: ['.js', '.ts', '.tsx']
   },
+  devtool: 'cheap-module-source-map',
   plugins: [
-    new CopyWebpackPlugin([
-      {
-        from: 'public/',
-        flatten: true
-      }
-    ])
+    new CopyWebpackPlugin({
+      patterns: [{ from: './public' }]
+    })
   ]
 }
